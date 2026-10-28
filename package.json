@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "mini CRM para freelancers",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev:web": "pnpm --filter @clientflow/web dev",
+    "dev": "pnpm --filter @clientflow/web dev"
   },
   "keywords": [],
   "author": "",
