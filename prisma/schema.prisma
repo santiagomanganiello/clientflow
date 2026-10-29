@@ -12,8 +12,20 @@ datasource db {
   provider = "postgresql"
 }
 
-model User { 
-  id           Int      @id @default(autoincrement())
+enum ClientStatus {
+  POTENTIAL
+  CONTACTED
+  NEGOTIATION
+  CLIENT
+}
+
+enum FollowUpStatus {
+  PENDING
+  COMPLETED
+}
+
+model User {
+  id           String      @id @default(uuid())
   email        String   @unique
   passwordHash String
   name         String?
@@ -22,32 +34,41 @@ model User {
 }
 
 model Client {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id])
-  note      Note[]
-  followUps FollowUp[]
+  id        String      @id @default(uuid())
   name      String
-  email     String   @unique
+  email     String       @unique
   phone     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  company   String?
+  status    ClientStatus @default(POTENTIAL)
+  userId    String
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  notes     Note[]
+  followUps FollowUp[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  @@unique([userId, email])
+  @@index([userId, status])
 }
 
 model Note {
-  id        Int      @id @default(autoincrement())
-  clientId  Int
-  client    Client   @relation(fields: [clientId], references: [id])
+  id        String      @id @default(uuid())
   body      String
+  clientId  String
+  client    Client   @relation(fields: [clientId], references: [id])
   createdAt DateTime @default(now())
+
+  @@index([clientId])
 }
 
 model FollowUp {
-  id            Int      @id @default(autoincrement())
-  description   String
-  dueAt         DateTime
-  status        String
-  clientId      Int
-  client        Client   @relation(fields: [clientId], references: [id])
-  createdAt     DateTime @default(now())
+  id          String      @id @default(uuid())
+  description String
+  dueAt       DateTime
+  status      FollowUpStatus @default(PENDING)
+  clientId    String
+  client      Client         @relation(fields: [clientId], references: [id])
+  createdAt   DateTime       @default(now())
+
+  @@index([clientId, dueAt])
 }
