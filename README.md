@@ -54,3 +54,54 @@ Regla de alcance: no añadir funcionalidades nuevas hasta completar el flujo pri
 | **Tests** | Vitest + Supertest |
 | **Entorno local** | Docker Compose |
 | **CI** | GitHub Actions: instalación, lint y tests |
+
+## Requisitos
+
+- Node.js 20 o superior
+- pnpm (se fija con Corepack, ver abajo)
+- Docker Desktop (o Docker Engine + Compose v2)
+
+## Puesta en marcha
+
+```bash
+git clone https://github.com/santiagomanganiello/clientflow.git
+cd clientflow
+
+# Versión de pnpm fijada en package.json
+corepack enable
+pnpm install --frozen-lockfile
+
+# Variables de entorno
+cp .env.example .env   # en Windows PowerShell: Copy-Item .env.example .env
+
+# Base de datos
+docker compose up -d
+pnpm exec prisma migrate deploy
+pnpm exec prisma generate
+```
+
+Verificación:
+
+```bash
+docker compose ps          # db debe aparecer como (healthy)
+pnpm exec prisma migrate status   # debe responder "Database schema is up to date"
+```
+
+## Variables de entorno
+
+| Variable | Uso |
+|---|---|
+| `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `POSTGRES_PORT` | Configuran el contenedor de PostgreSQL |
+| `DATABASE_URL` | Conexión de Prisma y de la aplicación |
+
+La URL repite usuario, contraseña, puerto y base. Si cambiás alguno de los `POSTGRES_*`, actualizá también `DATABASE_URL`.
+
+## Comandos útiles
+
+| Comando | Descripción |
+|---|---|
+| `docker compose down` | Detiene la base y conserva los datos |
+| `docker compose down -v` | Detiene la base y borra los datos (entorno limpio) |
+| `pnpm exec prisma migrate dev --name <nombre>` | Crea una migración desde cambios en el schema |
+| `pnpm exec prisma migrate deploy` | Aplica migraciones pendientes (CI y producción) |
+| `pnpm exec prisma studio` | Abre una interfaz para explorar los datos |
