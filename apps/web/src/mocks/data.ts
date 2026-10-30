@@ -1,4 +1,4 @@
-import { Client, FollowUp } from './types'
+import { Client, FollowUp } from '../lib/types'
 
 export const clients: Client[] = [
   { id: '1', name: 'María García', email: 'maria@acme.com', phone: '+34 600 111 222', company: 'Acme SL', status: 'cliente' },

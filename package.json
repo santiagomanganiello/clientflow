@@ -1,11 +1,19 @@
 {
   "name": "clientflow",
+  "private": true,
   "version": "1.0.0",
   "description": "mini CRM para freelancers",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "pnpm -r --parallel dev",
     "dev:web": "pnpm --filter @clientflow/web dev",
-    "dev": "pnpm --filter @clientflow/web dev"
+    "dev:api": "pnpm --filter @clientflow/api dev",
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "db:generate": "pnpm --filter @clientflow/api db:generate",
+    "db:migrate": "pnpm --filter @clientflow/api db:migrate",
+    "db:deploy": "pnpm --filter @clientflow/api db:deploy",
+    "db:status": "pnpm --filter @clientflow/api db:status",
+    "db:studio": "pnpm --filter @clientflow/api db:studio"
   },
   "keywords": [],
   "author": "",
@@ -18,23 +26,5 @@
     }
   },
   "packageManager": "pnpm@12.15.0",
-  "type": "module",
-  "dependencies": {
-    "@prisma/client": "7.10.1",
-    "dotenv": "^18.0.9",
-    "express": "^5.3.0",
-    "zod": "^4.6.7"
-  },
-  "devDependencies": {
-    "@types/express": "^5.0.6",
-    "@types/node": "^26.6.5",
-    "@types/supertest": "^7.2.1",
-    "eslint": "^10.13.0",
-    "prisma": "7.10.1",
-    "supertest": "^7.3.1",
-    "tsx": "^4.23.15",
-    "typescript": "^7.0.2",
-    "typescript-eslint": "^8.72.1",
-    "vitest": "^5.0.5"
-  }
+  "type": "module"
 }

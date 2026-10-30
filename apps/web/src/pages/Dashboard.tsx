@@ -2,6 +2,13 @@ import { clients, followUps } from '../mocks/data'
 import { Users, Target, Clock, AlertTriangle, ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
+const statusStyles: Record<string, string> = {
+  cliente: 'bg-green-100 text-green-700',
+  negociación: 'bg-blue-100 text-blue-700',
+  contactado: 'bg-amber-100 text-amber-700',
+  potencial: 'bg-gray-100 text-gray-700',
+}
+
 export default function Dashboard() {
   const total = clients.length
   const abiertas = clients.filter(c => c.status !== 'cliente').length
@@ -96,7 +103,7 @@ export default function Dashboard() {
                     <p className="text-sm font-medium text-gray-900">{client.name}</p>
                     <p className="text-xs text-gray-600">{client.company || client.email || '-'}</p>
                   </div>
-                  <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-700 capitalize">
+                  <span className={`px-2.5 py-1 text-xs font-medium rounded-full ${statusStyles[client.status] ?? 'bg-gray-100 text-gray-700'}`}>
                     {client.status}
                   </span>
                 </Link>

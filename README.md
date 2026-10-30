@@ -61,6 +61,21 @@ Regla de alcance: no añadir funcionalidades nuevas hasta completar el flujo pri
 - pnpm (se fija con Corepack, ver abajo)
 - Docker Desktop (o Docker Engine + Compose v2)
 
+## Estructura del monorepo
+
+```
+clientflow/
+├── apps/
+│   ├── api/            # Backend Express + Prisma (@clientflow/api)
+│   │   ├── prisma/     # Schema y migraciones
+│   │   └── src/        # Código de la API
+│   └── web/            # Frontend React + Vite (@clientflow/web)
+├── packages/           # Paquetes compartidos (futuro)
+├── docker-compose.yml  # PostgreSQL local
+├── pnpm-workspace.yaml # Definición del workspace
+└── package.json        # Scripts raíz del monorepo
+```
+
 ## Puesta en marcha
 
 ```bash
@@ -76,15 +91,18 @@ cp .env.example .env   # en Windows PowerShell: Copy-Item .env.example .env
 
 # Base de datos
 docker compose up -d
-pnpm exec prisma migrate deploy
-pnpm exec prisma generate
+pnpm db:deploy
+pnpm db:generate
+
+# Desarrollo (web + api en paralelo)
+pnpm dev
 ```
 
 Verificación:
 
 ```bash
-docker compose ps          # db debe aparecer como (healthy)
-pnpm exec prisma migrate status   # debe responder "Database schema is up to date"
+docker compose ps   # db debe aparecer como (healthy)
+pnpm db:status      # debe responder "Database schema is up to date"
 ```
 
 ## Variables de entorno
@@ -93,6 +111,7 @@ pnpm exec prisma migrate status   # debe responder "Database schema is up to dat
 |---|---|
 | `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `POSTGRES_PORT` | Configuran el contenedor de PostgreSQL |
 | `DATABASE_URL` | Conexión de Prisma y de la aplicación |
+| `PORT` | Puerto de la API (por defecto `3000`) |
 
 La URL repite usuario, contraseña, puerto y base. Si cambiás alguno de los `POSTGRES_*`, actualizá también `DATABASE_URL`.
 
@@ -100,8 +119,15 @@ La URL repite usuario, contraseña, puerto y base. Si cambiás alguno de los `PO
 
 | Comando | Descripción |
 |---|---|
+| `pnpm dev` | Levanta web y API en paralelo |
+| `pnpm dev:web` | Levanta solo el frontend |
+| `pnpm dev:api` | Levanta solo la API |
+| `pnpm build` | Compila todos los paquetes del workspace |
+| `pnpm test` | Ejecuta los tests del workspace |
+| `pnpm db:migrate -- --name <nombre>` | Crea una migración desde cambios en el schema |
+| `pnpm db:deploy` | Aplica migraciones pendientes (CI y producción) |
+| `pnpm db:generate` | Regenera el cliente de Prisma |
+| `pnpm db:status` | Consulta el estado de las migraciones |
+| `pnpm db:studio` | Abre una interfaz para explorar los datos |
 | `docker compose down` | Detiene la base y conserva los datos |
 | `docker compose down -v` | Detiene la base y borra los datos (entorno limpio) |
-| `pnpm exec prisma migrate dev --name <nombre>` | Crea una migración desde cambios en el schema |
-| `pnpm exec prisma migrate deploy` | Aplica migraciones pendientes (CI y producción) |
-| `pnpm exec prisma studio` | Abre una interfaz para explorar los datos |
